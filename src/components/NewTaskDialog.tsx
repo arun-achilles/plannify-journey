@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ClockIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,7 @@ interface NewTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialTask?: {
-    id: string;
+    id?: string;
     title: string;
     description: string;
     priority: Priority;
@@ -58,6 +58,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high'] as const),
   dueDate: z.date().nullable(),
+  dueTime: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -70,11 +71,18 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
 }) => {
   const { addTask, updateTask } = useTaskContext();
 
+  // Extract time from dueDate if it exists
+  const extractTimeString = (date: Date | null): string => {
+    if (!date) return '';
+    return format(date, 'HH:mm');
+  };
+
   const defaultValues: FormValues = {
     title: initialTask?.title || '',
     description: initialTask?.description || '',
     priority: initialTask?.priority || 'medium',
     dueDate: initialTask?.dueDate || null,
+    dueTime: initialTask?.dueDate ? extractTimeString(initialTask.dueDate) : '12:00',
   };
 
   const form = useForm<FormValues>({
@@ -83,14 +91,29 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
   });
 
   const onSubmit = (values: FormValues) => {
-    if (isEditing && initialTask) {
+    // Combine date and time
+    let combinedDateTime = values.dueDate;
+    
+    if (combinedDateTime && values.dueTime) {
+      const [hours, minutes] = values.dueTime.split(':').map(Number);
+      combinedDateTime = new Date(combinedDateTime);
+      combinedDateTime.setHours(hours, minutes);
+    }
+    
+    if (isEditing && initialTask?.id) {
       updateTask(initialTask.id, {
-        ...values,
+        title: values.title,
+        description: values.description || '',
+        priority: values.priority,
+        dueDate: combinedDateTime,
         completed: false,
       });
     } else {
       addTask({
-        ...values,
+        title: values.title,
+        description: values.description || '',
+        priority: values.priority,
+        dueDate: combinedDateTime,
         completed: false,
       });
     }
@@ -211,6 +234,29 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="dueTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Time</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <div className="flex items-center">
+                        <ClockIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="time"
+                          {...field}
+                          className="w-full"
+                        />
+                      </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button type="submit">

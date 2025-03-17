@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   format, 
@@ -14,7 +13,8 @@ import {
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon,
-  PlusIcon 
+  PlusIcon,
+  ClockIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -36,16 +36,12 @@ const CalendarView: React.FC<CalendarProps> = ({ onSelectDate, onAddTask }) => {
   const monthEnd = endOfMonth(monthStart);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
-  // Get day of week for the first day (0 = Sunday, 1 = Monday, etc.)
   const startDay = getDay(monthStart);
   
-  // Create an array with empty slots for the days before the first of the month
   const blanks = Array(startDay).fill(null);
   
-  // Combine blanks and actual days
   const allDays = [...blanks, ...monthDays];
   
-  // Group tasks by date
   const tasksByDate: Record<string, Task[]> = {};
   
   tasks.forEach(task => {
@@ -168,7 +164,15 @@ const CalendarView: React.FC<CalendarProps> = ({ onSelectDate, onAddTask }) => {
                               : `task-priority-${task.priority}`
                           )}
                         >
-                          {task.title}
+                          <div className="flex justify-between items-center">
+                            <span className="truncate">{task.title}</span>
+                            {task.dueDate && (
+                              <span className="flex items-center ml-1 whitespace-nowrap">
+                                <ClockIcon className="h-2.5 w-2.5 inline mr-0.5" />
+                                {format(task.dueDate, 'HH:mm')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       ))}
                       
