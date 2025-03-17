@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -73,7 +73,7 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
 
   // Extract time from dueDate if it exists
   const extractTimeString = (date: Date | null): string => {
-    if (!date) return '';
+    if (!date) return '12:00';
     return format(date, 'HH:mm');
   };
 
@@ -89,6 +89,19 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  // Reset form when initialTask changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        title: initialTask?.title || '',
+        description: initialTask?.description || '',
+        priority: initialTask?.priority || 'medium',
+        dueDate: initialTask?.dueDate || null,
+        dueTime: initialTask?.dueDate ? extractTimeString(initialTask.dueDate) : '12:00',
+      });
+    }
+  }, [initialTask, open, form]);
 
   const onSubmit = (values: FormValues) => {
     // Combine date and time
@@ -118,7 +131,6 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
       });
     }
     onOpenChange(false);
-    form.reset(defaultValues);
   };
 
   return (
@@ -176,7 +188,7 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
                     <FormLabel>Priority</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -248,7 +260,7 @@ const NewTaskDialog: React.FC<NewTaskDialogProps> = ({
                         <Input
                           type="time"
                           {...field}
-                          className="w-full"
+                          value={field.value || '12:00'}
                         />
                       </div>
                     </FormControl>
