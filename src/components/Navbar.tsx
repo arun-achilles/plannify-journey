@@ -61,7 +61,7 @@ const Navbar: React.FC<{ onNewTask: () => void }> = ({ onNewTask }) => {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <div className="font-semibold text-xl tracking-tight">Plannify</div>
+          <div className="font-semibold text-xl tracking-tight">Aligner</div>
           <nav className="hidden md:flex items-center space-x-1">
             <NavItem 
               icon={<HomeIcon className="w-5 h-5" />} 

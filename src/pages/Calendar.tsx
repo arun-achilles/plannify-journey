@@ -37,13 +37,11 @@ const CalendarPage = () => {
         open={isNewTaskDialogOpen}
         onOpenChange={setIsNewTaskDialogOpen}
         initialTask={selectedDate ? { 
-          id: '', 
           title: '', 
           description: '', 
           priority: 'medium', 
           dueDate: selectedDate,
-          completed: false,
-          createdAt: new Date()
+          completed: false
         } : undefined}
       />
     </div>
