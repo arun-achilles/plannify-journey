@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CalendarIcon, CheckSquareIcon, HomeIcon, PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Logo from '@/components/Logo';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -61,7 +61,7 @@ const Navbar: React.FC<{ onNewTask: () => void }> = ({ onNewTask }) => {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <div className="font-semibold text-xl tracking-tight">Aligner</div>
+          <Logo />
           <nav className="hidden md:flex items-center space-x-1">
             <NavItem 
               icon={<HomeIcon className="w-5 h-5" />} 

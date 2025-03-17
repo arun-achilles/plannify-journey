@@ -40,8 +40,7 @@ const CalendarPage = () => {
           title: '', 
           description: '', 
           priority: 'medium', 
-          dueDate: selectedDate,
-          completed: false
+          dueDate: selectedDate
         } : undefined}
       />
     </div>
